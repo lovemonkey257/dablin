@@ -321,21 +321,20 @@ void DABlinText::FICDiscardedFIB() {
 }
 
 void DABlinText::PADChangeDynamicLabel(const DL_STATE& dl) {
-	// fprintf(stderr, "### PADChangeDynamicLabel\n");
 	std::string channel = "";
-	int sid = 0;
+	const char fmt_cyan[] = "\x1B[36m";
+	const char fmt_rst[]  = "\x1B[0m";
 	if(!options.initial_channel.empty()) {
 		channel = options.initial_channel;
-		sid = options.initial_sid;
 	}
 	if(dl.charset != -1) {
 		std::string charset_name;
 		std::string label = CharsetTools::ConvertTextToUTF8(&dl.raw[0], dl.raw.size(), dl.charset, false, &charset_name);
-		fprintf(stderr,"PADChangeDynamicLabel SId 0x%04X Label:\'%s\'\n", sid, label.c_str());
+		fprintf(stderr,"DABlinText: PADChangeDynamicLabel Label: \'%s%s%s\'\n", fmt_cyan, label.c_str(), fmt_rst);
 	}
 	for(const DL_PLUS_OBJECT& obj : dl.dl_plus_objects) {
 		if(obj.content_type == 0)
 			continue;
-		fprintf(stderr,"PADChangeDynamicLabel SId 0x%04X DLPlusType:%d DLPlusText:\'%s\'\n", sid, obj.content_type, obj.text.c_str());
+		fprintf(stderr,"DABlinText: PADChangeDynamicLabel DLPlusType:%d DLPlusText:\'%s%s%s\'\n", obj.content_type, fmt_cyan, obj.text.c_str(), fmt_rst);
 	}
 }
