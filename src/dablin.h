@@ -53,6 +53,7 @@ struct DABlinTextOptions {
 	bool disable_int_catch_up;
 	bool disable_dyn_fic_msgs;
 	int gain;
+	bool loose;
 DABlinTextOptions() :
 	source_format(EnsembleSource::FORMAT_ETI),
 	initial_first_found_service(false),

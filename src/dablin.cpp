@@ -47,6 +47,7 @@ static void usage(const char* exe) {
 					"  -w            Output RIFF WAVE with PCM to stdout instead of using SDL (useful only on Little Endian)\n"
 					"  -u            Output untouched audio stream to stdout instead of using SDL\n"
 					"  -I            Don't catch up on stream after interruption\n"
+					"  -L            Enable loose behaviour (e.g. PAD conformance)\n"
 					"  -F            Disable dynamic FIC messages (dynamic PTY, announcements)\n"
 					"  file          Input file to be played (stdin, if not specified)\n",
 					EnsembleSource::FORMAT_ETI.c_str(),
@@ -75,7 +76,7 @@ int main(int argc, char **argv) {
 
 	// option args
 	int c;
-	while((c = getopt(argc, argv, "hf:c:l:d:D:g:Gs:x:1pwuIFr:R:")) != -1) {
+	while((c = getopt(argc, argv, "hf:c:l:d:D:g:Gs:x:1pwuIFr:R:L")) != -1) {
 		switch(c) {
 		case 'h':
 			usage(argv[0]);
@@ -137,6 +138,9 @@ int main(int argc, char **argv) {
 			break;
 		case 'F':
 			options.disable_dyn_fic_msgs = true;
+			break;
+		case 'L':
+			options.loose = true;
 			break;
 		case '?':
 		default:
@@ -274,7 +278,7 @@ DABlinText::DABlinText(DABlinTextOptions options) {
 	}
 
 	fic_decoder = new FICDecoder(this, options.disable_dyn_fic_msgs);
-	pad_decoder = new PADDecoder(this, true);
+	pad_decoder = new PADDecoder(this, options.loose);
 }
 
 DABlinText::~DABlinText() {
