@@ -49,6 +49,7 @@ static void usage(const char* exe) {
 					"  -I            Don't catch up on stream after interruption\n"
 					"  -L            Enable loose behaviour (e.g. PAD conformance)\n"
 					"  -F            Disable dynamic FIC messages (dynamic PTY, announcements)\n"
+					"  -Y            Initially disable Dynamic Label Plus (DL+)\n"
 					"  file          Input file to be played (stdin, if not specified)\n",
 					EnsembleSource::FORMAT_ETI.c_str(),
 					EnsembleSource::FORMAT_EDI.c_str(),
@@ -76,7 +77,7 @@ int main(int argc, char **argv) {
 
 	// option args
 	int c;
-	while((c = getopt(argc, argv, "hf:c:l:d:D:g:Gs:x:1pwuIFr:R:L")) != -1) {
+	while((c = getopt(argc, argv, "hf:c:l:d:D:g:Gs:x:1pwuIFr:R:LY")) != -1) {
 		switch(c) {
 		case 'h':
 			usage(argv[0]);
@@ -141,6 +142,9 @@ int main(int argc, char **argv) {
 			break;
 		case 'L':
 			options.loose = true;
+			break;
+		case 'Y':
+			options.initially_disable_dl_plus = true;
 			break;
 		case '?':
 		default:
@@ -328,6 +332,9 @@ void DABlinText::PADChangeDynamicLabel(const DL_STATE& dl) {
 	std::string channel = "";
 	const char fmt_cyan[] = "\x1B[36m";
 	const char fmt_rst[]  = "\x1B[0m";
+	if(options.initially_disable_dl_plus) {
+		return;
+	}
 	if(!options.initial_channel.empty()) {
 		channel = options.initial_channel;
 	}

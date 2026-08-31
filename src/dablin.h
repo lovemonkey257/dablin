@@ -54,6 +54,7 @@ struct DABlinTextOptions {
 	bool disable_dyn_fic_msgs;
 	int gain;
 	bool loose;
+	bool initially_disable_dl_plus;
 DABlinTextOptions() :
 	source_format(EnsembleSource::FORMAT_ETI),
 	initial_first_found_service(false),
@@ -67,7 +68,9 @@ DABlinTextOptions() :
 	untouched_output(false),
 	disable_int_catch_up(false),
 	disable_dyn_fic_msgs(false),
-	gain(DAB_LIVE_SOURCE_CHANNEL::auto_gain)
+	gain(DAB_LIVE_SOURCE_CHANNEL::auto_gain),
+	loose(false),
+	initially_disable_dl_plus(false)
 	{}
 };
 
