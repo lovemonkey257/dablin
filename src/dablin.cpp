@@ -49,7 +49,7 @@ static void usage(const char* exe) {
 					"  -I            Don't catch up on stream after interruption\n"
 					"  -L            Enable loose behaviour (e.g. PAD conformance)\n"
 					"  -F            Disable dynamic FIC messages (dynamic PTY, announcements)\n"
-					"  -Y            Initially disable Dynamic Label Plus (DL+)\n"
+					"  -Y            Disable PAD and Dynamic Label Plus (DL+) messages\n"
 					"  file          Input file to be played (stdin, if not specified)\n",
 					EnsembleSource::FORMAT_ETI.c_str(),
 					EnsembleSource::FORMAT_EDI.c_str(),
@@ -338,14 +338,20 @@ void DABlinText::PADChangeDynamicLabel(const DL_STATE& dl) {
 	if(!options.initial_channel.empty()) {
 		channel = options.initial_channel;
 	}
-	if(dl.charset != -1) {
-		std::string charset_name;
-		std::string label = CharsetTools::ConvertTextToUTF8(&dl.raw[0], dl.raw.size(), dl.charset, false, &charset_name);
-		fprintf(stderr,"DABlinText: PADChangeDynamicLabel Label: \'%s%s%s\'\n", fmt_cyan, label.c_str(), fmt_rst);
-	}
-	for(const DL_PLUS_OBJECT& obj : dl.dl_plus_objects) {
-		if(obj.content_type == 0)
-			continue;
-		fprintf(stderr,"DABlinText: PADChangeDynamicLabel DLPlusType:%d DLPlusText:\'%s%s%s\'\n", obj.content_type, fmt_cyan, obj.text.c_str(), fmt_rst);
+	if (dl.dl_plus_objects.size() > 0) {
+		for(const DL_PLUS_OBJECT& obj : dl.dl_plus_objects) {
+			if(obj.content_type == 0)
+				continue;
+			//fprintf(stderr,"DABlinText: PADChangeDynamicLabel DLPlusType:%d DLPlusText:\'%s%s%s\'\n", obj.content_type, fmt_cyan, obj.text.c_str(), fmt_rst);
+			fprintf(stderr,"DABlinText: PADChangeDynamicLabel DLPlusType: %s DLPlusText: \'%s%s%s\'\n", 
+					DynamicLabelDecoder::ConvertDLPlusContentTypeToString(obj.content_type).c_str(), 
+					fmt_cyan, obj.text.c_str(), fmt_rst);
+		}
+	} else {
+		if(dl.charset != -1) {
+			std::string charset_name;
+			std::string label = CharsetTools::ConvertTextToUTF8(&dl.raw[0], dl.raw.size(), dl.charset, false, &charset_name);
+			fprintf(stderr,"DABlinText: PADChangeDynamicLabel Label: \'%s%s%s\'\n", fmt_cyan, label.c_str(), fmt_rst);
+		}
 	}
 }
